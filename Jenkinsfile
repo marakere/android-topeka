@@ -45,7 +45,7 @@ stage 'Installs and runs the tests for Debug build on connected devices'
 node {
 
 withAndroidSdk {
-sh './gradlew connectedAndroidTest'
+//sh './gradlew connectedAndroidTest'
 }
 
 }
