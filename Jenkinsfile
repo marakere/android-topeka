@@ -26,6 +26,20 @@ withAndroidSdk {
  archive '**/*-debug.apk'
 }
 
+
+stage 'Installs the Debug build'
+
+node {
+
+withAndroidSdk {
+ sh './gradlew installDebug'
+}
+
+// Store the APK that was built
+ archive '**/*-debug.apk'
+}
+
+
 stage 'Run the JUnit Tests'
 
 node {
