@@ -11,42 +11,16 @@ def withAndroidSdk(String sdkDir = '/home/sasikumar/android-sdk-linux',
  }
 }
 
-stage 'Check out the source code'
-
 node {
-     git 'https://github.com/sasikumarm/android-topeka.git'
-}
-
-stage 'Assembles all Debug builds'
-
-node {
-    
+// Check out the source code
+ git 'https://github.com/googlesamples/android-topeka'
+// Build the app using the 'debug' build type,
+// and allow SDK components to auto-install
 withAndroidSdk {
-sh './gradlew clean assembleDebug'
+ sh './gradlew clean assembleDebug testDebugUnitTest'
 }
-
+// Analyse the JUnit test results
+ junit '**/TEST-*.xml'
 // Store the APK that was built
  archive '**/*-debug.apk'
-}
-
-stage 'Installs the Debug build'
-
-node {
-    
-withAndroidSdk {
-sh './gradlew installDebug'
-}
-
-// Store the APK that was built
- archive '**/*-debug.apk'
-}
-
-stage 'Run the JUnit Tests'
-
-node {
-
-withAndroidSdk {
-sh './gradlew test'
-}
-
 }
