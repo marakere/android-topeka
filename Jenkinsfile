@@ -17,7 +17,7 @@ node {
      git 'https://github.com/sasikumarm/android-topeka.git'
 }
 
-stage 'Build and (apk) Package '
+stage 'Assembles all Debug builds'
 
 node {
     
