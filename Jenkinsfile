@@ -11,7 +11,7 @@ def withAndroidSdk(String sdkDir = '/home/sasikumar/android-sdk-linux',
  }
 }
 
-stage 'Assembles all Debug builds
+stage 'Assembles all Debug builds'
 
 node {
 // Check out the source code
