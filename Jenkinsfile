@@ -26,6 +26,19 @@ withAndroidSdk {
  archive '**/*-debug.apk'
 }
 
+stage 'Run the JUnit Tests'
+
+node {
+
+withAndroidSdk {
+sh './gradlew test'
+}
+ 
+ // Analyse the JUnit test results
+ junit '**/TEST-*.xml'
+
+}
+
 
 stage 'Installs the Debug build'
 
@@ -51,15 +64,4 @@ sh './gradlew connectedAndroidTest'
 }
 
 
-stage 'Run the JUnit Tests'
 
-node {
-
-withAndroidSdk {
-sh './gradlew test'
-}
- 
- // Analyse the JUnit test results
- junit '**/TEST-*.xml'
-
-}
