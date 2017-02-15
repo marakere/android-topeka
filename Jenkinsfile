@@ -40,7 +40,7 @@ withAndroidSdk {
 }
 
 
-stage 'Installs and runs the tests for Debug build on connected devices'
+stage 'Runs the tests for Debug build on connected devices'
 
 node {
 
