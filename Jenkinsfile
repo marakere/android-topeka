@@ -11,7 +11,7 @@ def withAndroidSdk(String sdkDir = '/home/sasikumar/android-sdk-linux',
  }
 }
 
-stage 'Assembles all Debug builds'
+stage 'Clean and Assembles'
 
 node {
 // Check out the source code
@@ -37,6 +37,17 @@ withAndroidSdk {
 
 // Store the APK that was built
  archive '**/*-debug.apk'
+}
+
+
+stage 'Installs and runs the tests for Debug build on connected devices'
+
+node {
+
+withAndroidSdk {
+sh './gradlew connectedAndroidTest'
+}
+
 }
 
 
