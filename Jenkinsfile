@@ -46,7 +46,7 @@ stage 'Run the JUnit Tests'
 node {
 
 withAndroidSdk {
-sh './gradlew testDebugUnitTest'
+sh './gradlew test'
 }
 
 }
