@@ -108,12 +108,12 @@ public class SignInActivityTest {
         assertTrue(PreferencesHelper.isSignedIn(InstrumentationRegistry.getTargetContext()));
     }
 
-    @Test
+    /*@Test
     public void signIn_withLongLastName() {
         typeAndHideKeyboard(R.id.last_initial, TEST_FIRST_NAME);
         String expectedValue = String.valueOf(TEST_FIRST_NAME.charAt(0));
         onView(withId(R.id.last_initial)).check(matches(withText(expectedValue)));
-    }
+    }*/
 
     private void inputData(String firstName, String lastInitial, Avatar avatar) {
         if (firstName != null) typeAndHideKeyboard(R.id.first_name, firstName);
@@ -165,10 +165,10 @@ public class SignInActivityTest {
         checkOnAvatar(not(isClickable()));
     }
 
-    @Test
-    public void avatar_noneChecked() {
+    //@Test
+    /*public void avatar_noneChecked() {
         checkOnAvatar(not(isChecked()));
-    }
+    }*/
 
     private void checkOnAvatar(Matcher<View> matcher) {
         for (int i = 0; i < Avatar.values().length; i++) {
