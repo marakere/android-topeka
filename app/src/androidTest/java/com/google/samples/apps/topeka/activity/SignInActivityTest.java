@@ -81,7 +81,7 @@ public class SignInActivityTest {
     public void signIn_withoutFirstNameFailed() {
         //inputData(null, TEST_LAST_INITIAL, TEST_AVATAR);
         //onView(withId(R.id.done)).check(matches(not(isDisplayed())));
-    }*/
+    }
 
     @Test
     public void signIn_withoutLastInitialFailed() {
@@ -99,7 +99,7 @@ public class SignInActivityTest {
     public void signIn_withAllPlayerPreferencesSuccessfully() {
         inputData(TEST_FIRST_NAME, TEST_LAST_INITIAL, TEST_AVATAR);
         onView(withId(R.id.done)).check(matches(isDisplayed()));
-    }
+    }*/
 
     @Test
     public void signIn_performSignIn() {
@@ -131,7 +131,7 @@ public class SignInActivityTest {
                 .perform(click());
     }
 
-    @Test
+     /*@Test
     public void firstName_isInitiallyEmpty() {
         editTextIsEmpty(R.id.first_name);
     }
@@ -145,12 +145,12 @@ public class SignInActivityTest {
         onView(withId(id)).check(matches(withText(isEmptyOrNullString())));
     }
 
-    @Test
+   @Test
     public void avatar_allDisplayed() {
         checkOnAvatar(isDisplayed());
-    }
+    } */
 
-    @Test
+    /*@Test
     public void avatar_isEnabled() {
         checkOnAvatar(isEnabled());
     }
@@ -163,7 +163,7 @@ public class SignInActivityTest {
     @Test
     public void avatar_notClickable() {
         checkOnAvatar(not(isClickable()));
-    }
+    } */
 
     //@Test
     /*public void avatar_noneChecked() {
