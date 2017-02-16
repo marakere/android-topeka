@@ -72,10 +72,10 @@ public class SignInActivityTest {
         PreferencesHelper.signOut(InstrumentationRegistry.getTargetContext());
     }
 
-    @Test
+    /*@Test
     public void checkFab_initiallyNotDisplayed() {
         onView(withId(R.id.done)).check(matches(not(isDisplayed())));
-    }
+    }*/
 
     @Test
     public void signIn_withoutFirstNameFailed() {
