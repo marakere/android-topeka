@@ -15,7 +15,7 @@ stage 'Clean and Assembles'
 
 node {
 // Check out the source code
- git 'https://github.com/googlesamples/android-topeka'
+ git 'https://github.com/sasikumarm/android-topeka.git'
 // Build the app using the 'debug' build type,
 // and allow SDK components to auto-install
 withAndroidSdk {
