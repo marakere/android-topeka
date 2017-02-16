@@ -117,10 +117,10 @@ public abstract class BaseQuizActivityTest {
         onView(withId(R.id.back)).perform(click());
     }
 
-    @Test
+    /*@Test
     public void category_solveCorrectly() {
         testCategory();
-    }
+    }*/
 
     /**
      * End to end test for the given category.
