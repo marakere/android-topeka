@@ -77,11 +77,11 @@ public class SignInActivityTest {
         onView(withId(R.id.done)).check(matches(not(isDisplayed())));
     }*/
 
-    @Test
+    /*@Test
     public void signIn_withoutFirstNameFailed() {
         //inputData(null, TEST_LAST_INITIAL, TEST_AVATAR);
         //onView(withId(R.id.done)).check(matches(not(isDisplayed())));
-    }
+    }*/
 
     @Test
     public void signIn_withoutLastInitialFailed() {
