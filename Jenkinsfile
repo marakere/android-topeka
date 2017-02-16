@@ -45,7 +45,7 @@ stage 'Installs the Debug build'
 node {
 
 withAndroidSdk {
- sh './gradlew installDebug'
+ //sh './gradlew installDebug'
 }
 
 // Store the APK that was built
