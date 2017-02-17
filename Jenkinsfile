@@ -21,6 +21,8 @@ node {
 withAndroidSdk {
  sh './gradlew clean assembleDebug'
 }
+ 
+ 
 
 // Store the APK that was built
  archive '**/*-debug.apk'
@@ -51,6 +53,15 @@ withAndroidSdk {
 // Store the APK that was built
  archive '**/*-debug.apk'
 }
+
+stage 'Deploy into HockyApp' 
+
+node {
+ 
+step([$class: 'HockeyappRecorder', applications: [[apiToken: 'c700d88837ea41d3a66b3518680d0b04', downloadAllowed: false, filePath: '**/*-debug.apk', mandatory: false, notifyTeam: false, releaseNotesMethod: [$class: 'NoReleaseNotes'], uploadMethod: [$class: 'AppCreation', publicPage: false]]], debugMode: false, failGracefully: false])
+
+}
+
 
 
 stage 'Runs the tests for Debug build on connected devices'
