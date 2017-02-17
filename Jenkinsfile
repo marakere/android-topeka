@@ -58,6 +58,7 @@ stage 'Deploy into HockyApp'
 
 node {
  
+step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'sasikumarmofs1@gmail.com', sendToIndividuals: true])
 step([$class: 'HockeyappRecorder', applications: [[apiToken: '1be3ad79e663459f9931e1df327a3255', downloadAllowed: true, filePath: '**/*-debug.apk', mandatory: false, notifyTeam: true, releaseNotesMethod: [$class: 'NoReleaseNotes'], uploadMethod: [$class: 'AppCreation', publicPage: false]]], debugMode: false, failGracefully: false])
 
 }
