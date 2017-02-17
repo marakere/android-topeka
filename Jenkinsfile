@@ -58,7 +58,7 @@ stage 'Deploy into HockyApp'
 
 node {
  
-step([$class: 'HockeyappRecorder', applications: [[apiToken: 'c700d88837ea41d3a66b3518680d0b04', downloadAllowed: false, filePath: '**/*-debug.apk', mandatory: false, notifyTeam: false, releaseNotesMethod: [$class: 'NoReleaseNotes'], uploadMethod: [$class: 'AppCreation', publicPage: false]]], debugMode: false, failGracefully: false])
+step([$class: 'HockeyappRecorder', applications: [[apiToken: '1be3ad79e663459f9931e1df327a3255', downloadAllowed: true, filePath: '**/*-debug.apk', mandatory: false, notifyTeam: true, releaseNotesMethod: [$class: 'NoReleaseNotes'], uploadMethod: [$class: 'AppCreation', publicPage: false]]], debugMode: false, failGracefully: false])
 
 }
 
