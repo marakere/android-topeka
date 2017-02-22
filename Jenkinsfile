@@ -14,6 +14,17 @@ def withAndroidSdk(String sdkDir = '/home/sasikumar/android-sdk-linux',
 stage 'Clean and Assembles'
 
 node {
+    
+// send to email
+  emailext (
+      subject: " ${env.JOB_NAME} - ${env.BUILD_NUMBER} Build Process Started",
+      body: """<p>STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+        <p>Check console output at &QUOT;<a href='${env.BUILD_URL}/console'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
+      to: 'Manjunath.arakere@objectfrontier.com',
+      recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+    )
+    
+    
 // Check out the source code
  git 'https://github.com/sasikumarm/android-topeka.git'
 // Build the app using the 'debug' build type,
@@ -75,5 +86,21 @@ sh './gradlew connectedAndroidTest'
 
 }
 
+stage 'Deploy Into Googel Store'
+
+node {
+input message: 'Do you want deploy the latest build into Google Store', ok: 'Depoly'   
+
+//emailext body: 'Build', recipientProviders: [[$class: 'DevelopersRecipientProvider']], subject: 'Build', to: 'sasikumar.mani@objectfrontier.com'
+
+emailext (
+      subject: " ${env.JOB_NAME} - ${env.BUILD_NUMBER} Build deployed Into Google Store",
+      body: """<p>Deployed: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+        <p>Check console output at &QUOT;<a href='${env.BUILD_URL}/console'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
+      to: 'Manjunath.arakere@objectfrontier.com',
+      recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+)
+   
+}
 
 
