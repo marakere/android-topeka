@@ -74,6 +74,20 @@ step([$class: 'HockeyappRecorder', applications: [[apiToken: '1be3ad79e663459f99
 
 }
 
+stage 'Create JIRA TICKETS for Test Failures' 
+
+node {
+    withEnv(['JIRA_SITE=JIRA_SITE']) {
+      def testIssue = [fields: [ project: [id: 10000],
+                           summary: "${env.JOB_NAME} - ${env.BUILD_NUMBER}Test Case Failures",
+                           description: "${env.JOB_NAME} - ${env.BUILD_NUMBER}Test Case Failures",
+                           issuetype: [id: 10103]]]
+
+      response = jiraNewIssue issue: testIssue
+    }
+
+}
+
 
 
 stage 'Runs the tests for Debug build on connected devices'
@@ -100,6 +114,7 @@ emailext (
       to: 'Manjunath.arakere@objectfrontier.com',
       recipientProviders: [[$class: 'DevelopersRecipientProvider']]
 )
+
    
 }
 
