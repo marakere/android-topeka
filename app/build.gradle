@@ -15,7 +15,6 @@
  */
 
 apply plugin: 'com.android.application'
-apply plugin: 'jacoco'
 
 android {
     buildToolsVersion "25.0.0"
@@ -97,13 +96,6 @@ dependencies {
     jacoco {
         toolVersion = "0.7.6.201602180812"
         reportsDir = file("$buildDir/customJacocoReportDir")
-    }
-    
-    jacocoTestReport {
-        reports {
-            xml.enabled = true
-            html.enabled = true
-        }
     }
 }
 
