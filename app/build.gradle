@@ -93,11 +93,18 @@ dependencies {
     }
 
     androidTestCompile "org.hamcrest:hamcrest-core:${hamcrestVersion}"
-}
-jacocoTestReport {
-    reports {
-        xml.enabled = true
-        html.enabled = true
+    
+    jacoco {
+        toolVersion = "0.7.6.201602180812"
+        reportsDir = file("$buildDir/customJacocoReportDir")
+    }
+    
+    jacocoTestReport {
+        reports {
+            xml.enabled = true
+            html.enabled = true
+        }
     }
 }
+
 
