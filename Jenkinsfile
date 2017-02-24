@@ -1,121 +1,164 @@
+
 // Enables SDK auto-install, and uses it to run the given block
 def withAndroidSdk(String sdkDir = '/home/sasikumar/android-sdk-linux',
  Closure body) {
- // Create the SDK directory, and accept the licences
- // (see: d.android.com/r/studio-ui/export-licenses.html)
- //writeFile file: "${sdkDir}/licenses/android-sdk-license",
- //text: '\n8933bad161af4178b1185d1a37fbf41ea5269c55'
- // Run the given closure with this SDK directory
  withEnv(["ANDROID_HOME=${sdkDir}"]) {
  body()
  }
 }
 
-stage 'Clean and Assembles'
-
 node {
     
-// send to email
-  emailext (
-      subject: " ${env.JOB_NAME} - ${env.BUILD_NUMBER} Build Process Started",
-      body: """<p>STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
-        <p>Check console output at &QUOT;<a href='${env.BUILD_URL}/console'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
-      to: 'Manjunath.arakere@objectfrontier.com',
-      recipientProviders: [[$class: 'DevelopersRecipientProvider']]
-    )
+    stage('Checkout') {
     
-    
-// Check out the source code
- git 'https://github.com/sasikumarm/android-topeka.git'
-// Build the app using the 'debug' build type,
-// and allow SDK components to auto-install
-withAndroidSdk {
- sh './gradlew clean assembleDebug'
-}
- 
- 
-
-// Store the APK that was built
- archive '**/*-debug.apk'
-}
-
-stage 'Run the JUnit Tests'
-
-node {
-
-withAndroidSdk {
-sh './gradlew test'
-}
- 
- // Analyse the JUnit test results
- junit '**/TEST-*.xml'
-
-}
-
-
-stage 'Installs the Debug build'
-
-node {
-
-withAndroidSdk {
- //sh './gradlew installDebug'
-}
-
-// Store the APK that was built
- archive '**/*-debug.apk'
-}
-
-stage 'Deploy into HockyApp' 
-
-node {
- 
-step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'sasikumarmofs1@gmail.com', sendToIndividuals: true])
-step([$class: 'HockeyappRecorder', applications: [[apiToken: '1be3ad79e663459f9931e1df327a3255', downloadAllowed: true, filePath: '**/*-debug.apk', mandatory: false, notifyTeam: true, releaseNotesMethod: [$class: 'NoReleaseNotes'], uploadMethod: [$class: 'AppCreation', publicPage: false]]], debugMode: false, failGracefully: false])
-
-}
-
-stage 'Create JIRA TICKETS for Test Failures' 
-
-node {
-    withEnv(['JIRA_SITE=JIRA_SITE']) {
-      def testIssue = [fields: [ project: [id: 10000],
-                           summary: "${env.JOB_NAME} - ${env.BUILD_NUMBER}Test Case Failures",
-                           description: "${env.JOB_NAME} - ${env.BUILD_NUMBER}Test Case Failures",
-                           issuetype: [id: 10103]]]
-
-      response = jiraNewIssue issue: testIssue
+                // send to email
+                emailext (
+                      subject: " ${env.JOB_NAME} - ${env.BUILD_NUMBER} Build Process Started",
+                      body: """<p>STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+                        <p>Check console output at &QUOT;<a href='${env.BUILD_URL}/console'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
+                      to: 'sasikumar.mani@objectfrontier.com',
+                      recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+                )
+            
+                try {
+                   git 'https://github.com/sasikumarm/android-topeka.git'
+                   currentBuild.result = 'SUCCESS'
+                } catch (err) {
+                    currentBuild.result = 'UNSTABLE'
+                }
+      
     }
-
+    
+    stage ('Clean') {
+        
+                withAndroidSdk {
+                    try {
+                      sh './gradlew clean assembleDebug'
+                    } catch (err) {
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }   
+                // Store the APK that was built
+                archive '**/*-debug.apk'
+    }
+    
+    stage ('Lint'){
+        
+                withAndroidSdk {
+                    try {
+                      //sh './gradlew lint'
+                    } catch (err) {
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                    //stash includes: '*/build/outputs/lint-results*.xml', name: 'lint-reports'
+                }    
+    }
+    
+    stage('Junit') {
+        
+                withAndroidSdk {
+                    try {
+                      sh './gradlew test'
+                    } catch (err) {
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                    stash includes: '**/test-results/**/*.xml', name: 'junit-reports'
+                }  
+    }
+    
+    stage('Install') {
+        
+                withAndroidSdk {
+                    try {
+                        sh './gradlew installDebug'
+                    } catch (err) {
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }  
+                
+                // Store the APK that was built
+                archive '**/*-debug.apk'
+           
+    }
+    
+    stage ('HockyApp'){ 
+        
+                try {
+                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'sasikumarmofs1@gmail.com', sendToIndividuals: true])
+                    step([$class: 'HockeyappRecorder', applications: [[apiToken: '1be3ad79e663459f9931e1df327a3255', downloadAllowed: true, filePath: '**/*-debug.apk', mandatory: false, notifyTeam: true, releaseNotesMethod: [$class: 'NoReleaseNotes'], uploadMethod: [$class: 'AppCreation', publicPage: false]]], debugMode: false, failGracefully: false])
+                } catch (err) {
+                    currentBuild.result = 'UNSTABLE'
+                }
+    }
+    
+    stage ('DeviceTest'){
+        
+                withAndroidSdk {
+                    try {
+                     sh './gradlew connectedAndroidTest'
+                    } catch (err) {
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }    
+    }
+    
+    stage ('Deploy'){ 
+        
+                try {
+                        
+                        if (currentBuild.result == 'SUCCESS') {
+                            
+                            //Deployment Confirmation
+                            input message: 'Do you want deploy the ${env.BUILD_NUMBER} build into Google Store', ok: 'Depoly'
+                            
+                            //Sucess Email notification
+                            emailext (
+                                  subject: " ${env.JOB_NAME} - ${env.BUILD_NUMBER} Build deployed Into Google Store",
+                                  body: """<p>Deployed: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+                                    <p>Check console output at &QUOT;<a href='${env.BUILD_URL}/console'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
+                                  to: 'sasikumar.mani@objectfrontier.com',
+                                  recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+                            )
+                            
+                        } else {
+                            
+                            //Failure Email notification
+                            emailext (
+                                  subject: " ${env.JOB_NAME} - ${env.BUILD_NUMBER} Deployment canceled due to build failures",
+                                  body: """<p>Deployed canceled: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
+                                    <p>Check console output at &QUOT;<a href='${env.BUILD_URL}/console'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
+                                  to: 'sasikumar.mani@objectfrontier.com',
+                                  recipientProviders: [[$class: 'DevelopersRecipientProvider']]
+                            )
+                            
+                            //JIRA Ticket Creation
+                            withEnv(['JIRA_SITE=JIRA_SITE']) {
+                              def testIssue = [fields: [ project: [id: 10000],
+                                                   summary: "Fix the ${env.JOB_NAME} - ${env.BUILD_NUMBER} Build Failures",
+                                                   description: "${env.JOB_NAME} - ${env.BUILD_NUMBER} Build Failures , URL : ${env.BUILD_URL}",
+                                                   issuetype: [id: 10103]]]
+                        
+                              response = jiraNewIssue issue: testIssue
+                            }
+                            
+                            
+                        }
+                } catch (err) {
+                    currentBuild.result = 'UNSTABLE'
+                }
+    }
+    
+    stage('Report') {
+        
+                try {
+                  unstash 'junit-reports'
+                  step([$class: 'JUnitResultArchiver', testResults: '**/test-results/**/*.xml'])
+                
+                  unstash 'lint-reports'
+                  step([$class: 'LintPublisher', canComputeNew: false, canRunOnFailed: true, defaultEncoding: '', healthy: '', pattern: '*/build/outputs/lint-results*.xml', unHealthy: ''])
+                } catch (err) {
+                   print 'Report unstash'
+                }
+        
+    }
 }
-
-
-
-stage 'Runs the tests for Debug build on connected devices'
-
-node {
-
-withAndroidSdk {
-sh './gradlew connectedAndroidTest'
-}
-
-}
-
-stage 'Deploy Into Googel Store'
-
-node {
-input message: 'Do you want deploy the latest build into Google Store', ok: 'Depoly'   
-
-//emailext body: 'Build', recipientProviders: [[$class: 'DevelopersRecipientProvider']], subject: 'Build', to: 'sasikumar.mani@objectfrontier.com'
-
-emailext (
-      subject: " ${env.JOB_NAME} - ${env.BUILD_NUMBER} Build deployed Into Google Store",
-      body: """<p>Deployed: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
-        <p>Check console output at &QUOT;<a href='${env.BUILD_URL}/console'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
-      to: 'Manjunath.arakere@objectfrontier.com',
-      recipientProviders: [[$class: 'DevelopersRecipientProvider']]
-)
-
-   
-}
-
-
