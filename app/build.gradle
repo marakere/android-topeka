@@ -93,10 +93,7 @@ dependencies {
 
     androidTestCompile "org.hamcrest:hamcrest-core:${hamcrestVersion}"
     
-    jacoco {
-        toolVersion = "0.7.6.201602180812"
-        reportsDir = file("$buildDir/customJacocoReportDir")
-    }
+    
 }
 
 
