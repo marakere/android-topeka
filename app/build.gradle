@@ -122,7 +122,7 @@ jacoco {
 // Edit covered scope if needed
 // For my part I like having the coverage of both application and tests
 def coverageSourceDirs = [
-        '../app/src'
+        'src/main/java'
 ]
 
 task jacocoTestReport(type: JacocoReport, dependsOn: "test") {
