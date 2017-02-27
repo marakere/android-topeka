@@ -1,4 +1,3 @@
-
 // Enables SDK auto-install, and uses it to run the given block
 def withAndroidSdk(String sdkDir = '/home/sasikumar/android-sdk-linux',
  Closure body) {
@@ -46,11 +45,11 @@ node {
         
                 withAndroidSdk {
                     try {
-                      //sh './gradlew lint'
+                      sh './gradlew lint'
                     } catch (err) {
-                        currentBuild.result = 'UNSTABLE'
+                        currentBuild.result = 'SUCCESS'
                     }
-                    //stash includes: '*/build/outputs/lint-results*.xml', name: 'lint-reports'
+                stash includes: '*/build/outputs/lint-results*.xml', name: 'lint-reports'
                 }    
     }
     
@@ -59,6 +58,7 @@ node {
                 withAndroidSdk {
                     try {
                       sh './gradlew test'
+                      //step([$class: 'JacocoPublisher', inclusionPattern: 'build/jacoco/*.exec'])
                     } catch (err) {
                         currentBuild.result = 'UNSTABLE'
                     }
@@ -101,6 +101,18 @@ node {
                     }
                 }    
     }
+    
+    stage ('AWSDeviceFarm'){
+        
+                withAndroidSdk {
+                    try {
+                      build job: 'AWSDeviceFarm'
+                    } catch (err) {
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                }    
+    }
+    
     
     stage ('Deploy'){ 
         
