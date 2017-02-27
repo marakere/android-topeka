@@ -1,5 +1,5 @@
 // Enables SDK auto-install, and uses it to run the given block
-def withAndroidSdk(String sdkDir = '/home/sasikumar/android-sdk-linux',
+def withAndroidSdk(String sdkDir = '/home/ubuntu/android-sdk-linux',
  Closure body) {
  withEnv(["ANDROID_HOME=${sdkDir}"]) {
  body()
