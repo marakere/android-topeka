@@ -23,6 +23,11 @@ android {
     dataBinding {
         enabled = true
     }
+    
+    lintOptions {
+        // I prefer avoiding a build fail if there is any warning, for they are only warnings
+        abortOnError false
+    }
 
     defaultConfig {
         applicationId "com.google.samples.apps.topeka"
