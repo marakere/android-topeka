@@ -15,7 +15,7 @@ node {
                       subject: " ${env.JOB_NAME} - ${env.BUILD_NUMBER} Build Process Started",
                       body: """<p>STARTED: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
                         <p>Check console output at &QUOT;<a href='${env.BUILD_URL}/console'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
-                      to: 'sasikumar.mani@objectfrontier.com',
+                      to: 'ofsdevops@gmail.com',
                       recipientProviders: [[$class: 'DevelopersRecipientProvider']]
                 )
             
@@ -139,7 +139,7 @@ node {
                                   subject: " ${env.JOB_NAME} - ${env.BUILD_NUMBER} Deployment canceled due to build failures",
                                   body: """<p>Deployed canceled: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
                                     <p>Check console output at &QUOT;<a href='${env.BUILD_URL}/console'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
-                                  to: 'sasikumar.mani@objectfrontier.com',
+                                  to: 'ofsdevops@gmail.com',
                                   recipientProviders: [[$class: 'DevelopersRecipientProvider']]
                             )
                             
