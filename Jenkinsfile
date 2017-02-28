@@ -1,5 +1,5 @@
 // Enables SDK auto-install, and uses it to run the given block
-def withAndroidSdk(String sdkDir = '/home/ubuntu/android-sdk-linux',
+def withAndroidSdk(String sdkDir = '/opt/android-sdk_r24.4.1-linux',
  Closure body) {
  withEnv(["ANDROID_HOME=${sdkDir}"]) {
  body()
@@ -58,7 +58,7 @@ node {
                 withAndroidSdk {
                     try {
                       sh './gradlew test'
-                      //step([$class: 'JacocoPublisher', inclusionPattern: 'build/jacoco/*.exec'])
+                      step([$class: 'JacocoPublisher', inclusionPattern: 'build/jacoco/*.exec'])
                     } catch (err) {
                         currentBuild.result = 'UNSTABLE'
                     }
@@ -68,9 +68,10 @@ node {
     
     stage('Install') {
         
+            if (currentBuild.result == 'SUCCESS') {
                 withAndroidSdk {
                     try {
-                        sh './gradlew installDebug'
+                        //sh './gradlew installDebug'
                     } catch (err) {
                         currentBuild.result = 'UNSTABLE'
                     }
@@ -78,39 +79,56 @@ node {
                 
                 // Store the APK that was built
                 archive '**/*-debug.apk'
+            } else {
+                print 'Skipping Install step due to build Errors'
+             } 
            
     }
+   
     
-    stage ('HockyApp'){ 
+    stage ('LocalDeviceTest'){
         
-                try {
-                    step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'sasikumarmofs1@gmail.com', sendToIndividuals: true])
-                    step([$class: 'HockeyappRecorder', applications: [[apiToken: '1be3ad79e663459f9931e1df327a3255', downloadAllowed: true, filePath: '**/*-debug.apk', mandatory: false, notifyTeam: true, releaseNotesMethod: [$class: 'NoReleaseNotes'], uploadMethod: [$class: 'AppCreation', publicPage: false]]], debugMode: false, failGracefully: false])
-                } catch (err) {
-                    currentBuild.result = 'UNSTABLE'
-                }
-    }
-    
-    stage ('DeviceTest'){
-        
+            if (currentBuild.result == 'SUCCESS') {
                 withAndroidSdk {
                     try {
-                     sh './gradlew connectedAndroidTest'
+                     //sh './gradlew connectedAndroidTest'
                     } catch (err) {
                         currentBuild.result = 'UNSTABLE'
                     }
-                }    
+                } 
+            } else {
+                    print 'Skipping DeviceTest step due to build Errors'
+            }  
     }
     
     stage ('AWSDeviceFarm'){
         
+             if (currentBuild.result == 'SUCCESS') {
                 withAndroidSdk {
                     try {
                       build job: 'AWSDeviceFarm'
                     } catch (err) {
                         currentBuild.result = 'UNSTABLE'
                     }
-                }    
+                }
+             } else {
+                     print 'Skipping AWSDeviceFarm step due to build Errors'
+             }  
+    }
+    
+     
+    stage ('HockyApp'){ 
+        
+                 if (currentBuild.result == 'SUCCESS') {
+                    try {
+                        step([$class: 'Mailer', notifyEveryUnstableBuild: true, recipients: 'ofsdevops@gmail.com', sendToIndividuals: true])
+                        step([$class: 'HockeyappRecorder', applications: [[apiToken: '346985fd862f4a90b638def493c0d5a9', downloadAllowed: true, filePath: '**/*-debug.apk', mandatory: false, notifyTeam: true, releaseNotesMethod: [$class: 'NoReleaseNotes'], uploadMethod: [$class: 'AppCreation', publicPage: false]]], debugMode: false, failGracefully: false])
+                    } catch (err) {
+                        currentBuild.result = 'UNSTABLE'
+                    }
+                 } else {
+                     print 'Skipping HockyApp  step due to build Errors'
+                 }    
     }
     
     
@@ -128,7 +146,7 @@ node {
                                   subject: " ${env.JOB_NAME} - ${env.BUILD_NUMBER} Build deployed Into Google Store",
                                   body: """<p>Deployed: Job '${env.JOB_NAME} [${env.BUILD_NUMBER}]':</p>
                                     <p>Check console output at &QUOT;<a href='${env.BUILD_URL}/console'>${env.JOB_NAME} [${env.BUILD_NUMBER}]</a>&QUOT;</p>""",
-                                  to: 'sasikumar.mani@objectfrontier.com',
+                                  to: 'ofsdevops@gmail.com',
                                   recipientProviders: [[$class: 'DevelopersRecipientProvider']]
                             )
                             
@@ -148,6 +166,7 @@ node {
                               def testIssue = [fields: [ project: [id: 10000],
                                                    summary: "Fix the ${env.JOB_NAME} - ${env.BUILD_NUMBER} Build Failures",
                                                    description: "${env.JOB_NAME} - ${env.BUILD_NUMBER} Build Failures , URL : ${env.BUILD_URL}",
+                                                   assignee: 'ofsdevops@gmail.com',
                                                    issuetype: [id: 10103]]]
                         
                               response = jiraNewIssue issue: testIssue
