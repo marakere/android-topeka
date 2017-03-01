@@ -146,7 +146,7 @@ node {
                               def testIssue = [fields: [ project: [id: 10000],
                                                    summary: "Build - ${env.BUILD_NUMBER} smoke and regression testing",
                                                    description: "Test the critical functionalities in build ${env.BUILD_NUMBER} ",
-                                                   assignee: 'ofsdevops@gmail.com',
+                                                   //assignee: 'ofsdevops@gmail.com',
                                                    issuetype: [id: 10100]]]
                         
                               response = jiraNewIssue issue: testIssue
@@ -177,7 +177,7 @@ node {
                               def testIssue = [fields: [ project: [id: 10000],
                                                    summary: "Fix the ${env.JOB_NAME} - ${env.BUILD_NUMBER} Build Failures",
                                                    description: "${env.JOB_NAME} - ${env.BUILD_NUMBER} Build Failures , URL : ${env.BUILD_URL}",
-                                                   assignee: 'ofsdevops@gmail.com',
+                                                   //assignee: 'ofsdevops@gmail.com',
                                                    issuetype: [id: 10103]]]
                         
                               response = jiraNewIssue issue: testIssue
