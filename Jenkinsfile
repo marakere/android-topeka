@@ -140,6 +140,17 @@ node {
                             
                             //Deployment Confirmation
                             input message: 'Do you want deploy the ${env.BUILD_NUMBER} build into Google Store', ok: 'Depoly'
+                         
+                            //JIRA story creation for testing
+                            withEnv(['JIRA_SITE=JIRA_SITE']) {
+                              def testIssue = [fields: [ project: [id: 10000],
+                                                   summary: "Build - ${env.BUILD_NUMBER} smoke and regression testing",
+                                                   description: "Test the critical functionalities in build ${env.BUILD_NUMBER} ",
+                                                   assignee: 'ofsdevops@gmail.com',
+                                                   issuetype: [id: 10100]]]
+                        
+                              response = jiraNewIssue issue: testIssue
+                            }
                             
                             //Sucess Email notification
                             emailext (
