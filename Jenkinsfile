@@ -139,7 +139,7 @@ node {
                         if (currentBuild.result == 'SUCCESS') {
                             
                             //Deployment Confirmation
-                            input message: 'Do you want deploy this build into Google Store', ok: 'Depoly'
+                            input message: 'Do you want deploy this build into Google Store ?', ok: 'Depoly'
                          
                             //JIRA story creation for testing
                             withEnv(['JIRA_SITE=JIRA_SITE']) {
